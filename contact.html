@@ -511,24 +511,49 @@ footer { background: var(--footer-bg); padding: clamp(48px,5vw,80px) clamp(24px,
 
 <script>
   // Mobile menu
-  document.getElementById('hamburger').addEventListener('click', () => document.getElementById('mobileMenu').classList.add('open'));
-  document.getElementById('mobileClose').addEventListener('click', () => document.getElementById('mobileMenu').classList.remove('open'));
-  function closeMobile() { document.getElementById('mobileMenu').classList.remove('open'); }
+  document.getElementById('hamburger').addEventListener('click', function() {
+    document.getElementById('mobileMenu').classList.add('open');
+  });
+  document.getElementById('mobileClose').addEventListener('click', function() {
+    document.getElementById('mobileMenu').classList.remove('open');
+  });
+  function closeMobile() {
+    document.getElementById('mobileMenu').classList.remove('open');
+  }
 
   // Scroll reveal
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(el => { if (el.isIntersecting) { el.target.classList.add('visible'); obs.unobserve(el.target); } });
-  }, { threshold: .1, rootMargin: '0px 0px -40px 0px' });
-  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  window.addEventListener('DOMContentLoaded', function() {
+    var items = document.querySelectorAll('.reveal');
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    items.forEach(function(el) { observer.observe(el); });
+  });
 
-  // Form submit → show success message
+  // Form submit
   document.getElementById('contactForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    const firstName = document.getElementById('firstName').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const consent = document.getElementById('consent').checked;
+    var firstName = document.getElementById('firstName').value.trim();
+    var email     = document.getElementById('email').value.trim();
+    var consent   = document.getElementById('consent').checked;
     if (!firstName || !email || !consent) {
-      // simple shake on empty required fields
-      this.querySelectorAll(':invalid').forEach(el => {
+      this.querySelectorAll(':invalid').forEach(function(el) {
         el.style.borderBottomColor = '#c0392b';
-        el.addEventListener('input'
+        el.addEventListener('input', function() {
+          el.style.borderBottomColor = '';
+        }, { once: true });
+      });
+      return;
+    }
+    document.getElementById('formSuccess').classList.add('show');
+    document.querySelector('.btn-submit').style.display = 'none';
+    window.scrollTo({ top: document.getElementById('formSuccess').offsetTop - 100, behavior: 'smooth' });
+  });
+</script>
+</body>
+</html>
